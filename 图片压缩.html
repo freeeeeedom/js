@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!--create by Freeeeeedom-->
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Freeeeeedom!</title>
+</head>
+<body>
+<input id="uploadfile" type="file" onchange="getImage()">
+<image id="oldImg"></image>
+<image id="newImg"></image>
+</body>
+</html>
+<script type="text/javascript">
+    let imgWidth = 300;
+    let imgHeight = 300;
+    let img = document.getElementById("oldImg");
+    let newImage = document.getElementById("newImg");
+
+    let canvas = document.createElement('canvas');
+    canvas.width = imgWidth;
+    canvas.height = imgHeight;
+    let context = canvas.getContext('2d');
+    img.onload = function () {
+        // 在canvas绘制前填充白色背景
+        context.fillStyle = "#fff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(img, 0, 0, imgWidth, imgHeight);
+        let imageData = context.getImageData(0, 0, imgWidth, imgHeight);
+        //获取到每个像素的信息
+        for (let i = 0; i < imageData.data.length; i += 4) {
+            if (imageData.data[i + 3] !== 0) {
+                continue;
+            }
+            for (let j = 0; j < 4; j++) {
+                // 当该像素是透明的，则设置成白色
+                imageData.data[i + j] = 255;
+            }
+        }
+        context.putImageData(imageData, 0, 0);
+        newImage.setAttribute('src', canvas.toDataURL('image/jpeg', 0.7))
+    }
+
+    function getImage() {
+        context.clearRect(0, 0, imgWidth, imgHeight);
+        let file = document.getElementById("uploadfile");
+        img.setAttribute("src", URL.createObjectURL(file.files[0]))
+    }
+</script>
